@@ -29,7 +29,7 @@ Classes de grafos estudadas:
 | `survey_v1.tex` | Livro LaTeX com enunciados, contexto histórico e problemas abertos (bilíngue) |
 | `survey_v2.tex` | Versão com esboços de provas e caixas de técnicas |
 | `lista_papers.txt` | Lista dos 44 artigos organizados por tema |
-| `*.pdf` (arXiv IDs) | PDFs baixados do arXiv |
+| `papers/*.pdf` | PDFs baixados do arXiv (44 artigos) |
 
 ## Compilando
 
