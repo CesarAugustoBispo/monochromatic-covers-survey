@@ -1,0 +1,861 @@
+\documentclass[12pt,a4paper,twoside,openright]{book}
+
+%% Pacotes
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{mdframed}
+\usepackage{cleveref}
+
+\geometry{
+  a4paper,
+  left=3.2cm, right=2.8cm,
+  top=3cm, bottom=3cm,
+  headheight=15pt
+}
+
+%% Cores
+\definecolor{darkblue}{HTML}{1a1a2e}
+\definecolor{accent}{HTML}{c0392b}
+\definecolor{linkcolor}{HTML}{2980b9}
+\definecolor{thmback}{HTML}{f0f4ff}
+\definecolor{conjback}{HTML}{fff5f5}
+\definecolor{defback}{HTML}{f5fff5}
+
+%% Hyperref
+\hypersetup{
+  colorlinks=true,
+  linkcolor=darkblue,
+  urlcolor=linkcolor,
+  citecolor=accent,
+  pdftitle={Cobertura e Partição em Estruturas Monocromáticas},
+  pdfauthor={Survey compilado para qualificação},
+  bookmarksnumbered=true
+}
+
+%% Ambientes de teoremas
+\theoremstyle{definition}
+\newmdtheoremenv[
+  backgroundcolor=thmback,
+  linecolor=darkblue,
+  linewidth=1.5pt,
+  leftmargin=0pt, rightmargin=0pt,
+  innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=10pt, innerrightmargin=10pt,
+  skipabove=8pt, skipbelow=6pt
+]{theorem}{Theorem}[chapter]
+
+\newmdtheoremenv[
+  backgroundcolor=conjback,
+  linecolor=accent,
+  linewidth=1.5pt,
+  leftmargin=0pt, rightmargin=0pt,
+  innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=10pt, innerrightmargin=10pt,
+  skipabove=8pt, skipbelow=6pt
+]{conjecture}[theorem]{Conjecture}
+
+\newmdtheoremenv[
+  backgroundcolor=defback,
+  linecolor=darkblue!60,
+  linewidth=1pt,
+  leftmargin=0pt, rightmargin=0pt,
+  innertopmargin=5pt, innerbottommargin=5pt,
+  innerleftmargin=10pt, innerrightmargin=10pt,
+  skipabove=6pt, skipbelow=4pt
+]{definition}[theorem]{Definition}
+
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}{Open Problem}[chapter]
+
+%% Título das seções em darkblue
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{darkblue}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{darkblue}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{darkblue!80}}
+  {\thesubsection}{1em}{}
+
+%% Cabeçalho
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\color{darkblue}\leftmark}
+\fancyhead[RO]{\small\color{darkblue}\rightmark}
+\fancyfoot[C]{\thepage}
+
+%% Macros úteis
+\newcommand{\arxiv}[1]{\href{https://arxiv.org/abs/#1}{\textcolor{linkcolor}{arXiv:#1}}}
+\newcommand{\Kn}{K_n}
+\newcommand{\Knm}{K_{n,n}}
+\newcommand{\Knnn}{K_{n,n,n}}
+\newcommand{\Gnp}{G(n,p)}
+\newcommand{\dmin}{\delta(G)}
+\newcommand{\cpr}{\mathrm{cp}_r}
+
+\begin{document}
+
+%%===================================================================
+%% CAPA
+%%===================================================================
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\color{darkblue}\rule{\linewidth}{2pt}}\\[0.5cm]
+{\Huge\bfseries\color{darkblue}
+  Cobertura e Partição\\[4pt]
+  em Estruturas\\[4pt]
+  Monocromáticas}\\[0.8cm]
+{\color{accent}\rule{\linewidth}{1pt}}\\[0.6cm]
+{\large
+  Caminhos $\cdot$ Ciclos $\cdot$ Árvores $\cdot$ Componentes Conexas}\\[0.3cm]
+{\normalsize
+  Grafos Completos $\cdot$ Grau Mínimo Alto $\cdot$ Aleatórios $\cdot$ Bipartidos $\cdot$ Multipartidos}\\[2cm]
+{\large\textbf{Versão I} — Enunciados e Contexto}\\[0.4cm]
+{\normalsize Survey compilado a partir de 44 artigos do arXiv}\\[0.3cm]
+{\normalsize Para uso em qualificação de doutorado}\\[2.5cm]
+{\normalsize Compilado em julho de 2026}
+\vfill
+{\color{darkblue}\rule{\linewidth}{2pt}}
+\end{titlepage}
+
+\frontmatter
+\tableofcontents
+\cleardoublepage
+
+%%===================================================================
+\chapter*{Prefácio / Preface}
+\addcontentsline{toc}{chapter}{Prefácio / Preface}
+%%===================================================================
+
+
+Este documento é um survey de 44 artigos do arXiv sobre um tema central da combinatória extremal:
+\textbf{a existência de estruturas monocromáticas que cobrem ou particionam os vértices de grafos com coloração de arestas}.
+
+As estruturas de interesse são \textbf{caminhos}, \textbf{ciclos}, \textbf{árvores} e \textbf{componentes conexas} monocromáticas.
+Os grafos considerados variam entre grafos completos, grafos com grau mínimo alto, grafos aleatórios,
+grafos bipartidos e grafos multipartidos.
+
+\medskip
+\noindent\textbf{Como usar este documento.}
+Cada capítulo corresponde a uma categoria de resultados. Dentro de cada capítulo, os artigos são
+apresentados em ordem cronológica ou temática, com os enunciados exatos dos principais teoremas
+(em inglês, conforme aparecem nos artigos originais), seguidos de contexto e discussão em português.
+
+\medskip
+\noindent\textbf{Convenção.} Ao longo do texto, um \emph{ciclo} pode ser o conjunto vazio, um vértice isolado
+ou uma aresta (conforme convenção padrão nesta área). O mesmo vale para caminhos.
+
+\medskip
+\noindent\textbf{Referências.} Cada seção inclui o identificador arXiv do artigo correspondente.
+Todos os PDFs estão disponíveis na raiz do repositório.
+
+
+\mainmatter
+
+%%===================================================================
+\chapter{Introdução e Definições}
+%%===================================================================
+
+
+\section{Contexto histórico}
+
+O estudo de estruturas monocromáticas em grafos com coloração de arestas remonta ao clássico Teorema de Ramsey
+(1930), que garante a existência de subgrafos monocromáticos em qualquer coloração de grafos completos suficientemente grandes.
+Uma variação natural e rica desse problema é a seguinte: em vez de encontrar \emph{uma} estrutura monocromática,
+queremos encontrar poucas estruturas que juntas \emph{cubram ou particionem} todos os vértices.
+
+A pedra fundadora desta área é um resultado de Gerencsér e Gyárfás (1967):
+
+
+\begin{theorem}[Gerencsér--Gyárfás, 1967]
+In every $2$-edge-colouring of $\Kn$, the vertices can be covered by two vertex-disjoint monochromatic paths.
+\end{theorem}
+
+
+\noindent Esse resultado motivou uma série de generalizações e conjecturas que estruturam todo o campo.
+As três mais influentes são:
+
+
+\begin{conjecture}[Gyárfás, 1977]\label{conj:gyarfas-paths}
+The vertices of every $r$-edge-coloured complete graph can be covered by $r$ vertex-disjoint monochromatic paths.
+\end{conjecture}
+
+\begin{conjecture}[Erdős--Gyárfás--Pyber, 1991]\label{conj:egp-cycles}
+The vertices of every $r$-edge-coloured complete graph can be partitioned into $r$ vertex-disjoint monochromatic cycles.
+\end{conjecture}
+
+\begin{conjecture}[Ryser, 1967 / Lovász, 1975 — versão para grafos]\label{conj:ryser}
+For every $r$-edge-coloured graph $G$, the vertices of $G$ can be covered by at most $(r-1)\alpha(G)$
+monochromatic trees, where $\alpha(G)$ is the independence number.
+\end{conjecture}
+
+
+\section{Definições essenciais}
+
+
+\begin{definition}
+Let $G$ be an $r$-edge-coloured graph. We define:
+\begin{itemize}[leftmargin=*]
+  \item $\mathrm{cp}_r(G)$: the minimum $k$ such that every $r$-colouring of $G$ admits a vertex-partition into
+        $k$ monochromatic cycles.
+  \item $\mathrm{pp}_r(G)$: the minimum $k$ for vertex-partition into $k$ monochromatic paths.
+  \item $\mathrm{tp}_r(G)$: the minimum $k$ for vertex-partition into $k$ monochromatic trees (connected subgraphs).
+  \item $\mathrm{tc}_r(G)$: the minimum $k$ for vertex-\emph{cover} (not necessarily partition) by $k$ monochromatic
+        connected subgraphs.
+\end{itemize}
+\end{definition}
+
+
+\section{Técnicas recorrentes}
+
+Os principais métodos utilizados nos papers desta compilação são:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Regularity Lemma de Szemerédi}: reduz o problema a grafos regularizados; técnica central
+        em resultados assintóticos dos anos 1990--2010.
+  \item \textbf{Método de matchings conexos (Łuczak)}: reduz partição em caminhos/ciclos à existência de
+        matchings conexos em grafos de clusters.
+  \item \textbf{Método de absorção}: constrói um subgrafo ``absorvente'' que incorpora os vértices restantes;
+        essencial em provas exatas.
+  \item \textbf{Blow-up Lemma}: permite encontrar subgrafos em grafos regulares; usado em resultados de grau mínimo.
+  \item \textbf{Probabilistic method / Lovász Local Lemma}: central nos resultados para grafos aleatórios.
+\end{itemize}
+
+
+%%===================================================================
+\chapter{Grafos Completos: Partição em Caminhos e Ciclos}
+%%===================================================================
+
+
+Este capítulo cobre resultados onde o grafo hospedeiro é um grafo completo $K_n$.
+
+
+\section{A Conjectura de Lehel e sua resolução}
+
+\begin{theorem}[Łuczak--Rödl--Szemerédi, 1998; Allen, 2008; Bessy--Thomassé, 2010]
+The vertex set of every $2$-edge-coloured complete graph $\Kn$ can be partitioned into
+two monochromatic cycles of \emph{distinct colours}.
+\end{theorem}
+
+
+\noindent\textbf{Nota histórica.} Esta afirmação, conhecida como \emph{Conjectura de Lehel}, foi proposta nos anos 1970.
+Foi provada para $n$ grande por Łuczak, Rödl e Szemerédi usando o Regularity Lemma,
+depois por Allen sem o Regularity Lemma, e finalmente para todo $n$ por Bessy e Thomassé com uma prova notavelmente curta e elegante.
+
+
+\section{A falsidade da Conjectura de Erdős--Gyárfás--Pyber para $r\ge3$}
+
+\begin{theorem}[Pokrovskiy, 2014 — \arxiv{1205.5492}]
+For $r \geq 3$, there exist infinitely many $r$-edge-coloured complete graphs which cannot be
+vertex-partitioned into $r$ monochromatic cycles.
+\end{theorem}
+
+
+\noindent Ou seja, a Conjectura~\ref{conj:egp-cycles} é \textbf{falsa} para $r\ge3$.
+O mesmo artigo prova um resultado positivo para 3 cores em termos de caminhos:
+
+
+\begin{theorem}[Pokrovskiy, 2014 — \arxiv{1205.5492}]
+In any $3$-edge-colouring of $\Kn$, the vertices can be covered by three vertex-disjoint monochromatic paths.
+\end{theorem}
+
+\begin{remark}
+This settles \Cref{conj:gyarfas-paths} for $r=3$. As an intermediate step, the paper shows that in any
+$2$-edge-colouring of $\Kn$, the vertices can be covered by a red path and a disjoint blue balanced complete bipartite graph.
+\end{remark}
+
+\section{Coberturas com $O(r\log r)$ ciclos}
+
+\begin{theorem}[Gyárfás--Ruszinkó--Sárközy--Szemerédi, 2006]
+For large $n$, the vertices of any $r$-edge-coloured $\Kn$ can be partitioned into at most $100r\log r$
+vertex-disjoint monochromatic cycles.
+\end{theorem}
+
+\section{Coberturas com caminhos da mesma cor: a Conjectura de Erdős--Gyárfás}
+
+\begin{theorem}[Erdős--Gyárfás, 1995]
+In every $2$-edge-coloured $\Kn$, there exists a collection of $2\sqrt{n}$ monochromatic paths,
+all of the same colour, covering all vertices.
+\end{theorem}
+
+\begin{conjecture}[Erdős--Gyárfás, 1995 — resolvida em 2024]
+In every $2$-edge-coloured $\Kn$, there exists a collection of $\sqrt{n}$ monochromatic paths,
+all of the same colour, covering all vertices.
+\end{conjecture}
+
+\begin{theorem}[Pokrovskiy--Versteegen--Williams, 2024 — \arxiv{2409.03623}]
+For all $n > 2^{40}$, the vertex set of every $2$-edge-coloured $\Kn$ can be covered by
+$\sqrt{n}$ monochromatic paths, all of the same colour.
+\end{theorem}
+
+
+\noindent\textbf{Discussão.} O bound $\sqrt{n}$ é tight: tome uma partição de $V(\Kn)$ em
+$A$ e $B$ com $|A|=n-\sqrt{n}+1$, $|B|=\sqrt{n}-1$, colora arestas em $A$ de azul e as demais de vermelho.
+Cada caminho vermelho cobre no máximo $2$ vértices de $B$, logo são necessários $\ge \sqrt{n}-1$ caminhos vermelhos para cobrir $B$.
+
+
+\section{Componentes monocromáticas com muitas arestas}
+
+\begin{theorem}[Luo, 2021 — \arxiv{2111.13342}]
+Every $3$-edge-colouring of $\Kn$ contains a monochromatic connected subgraph spanning at least
+$\frac{1}{6}$ of the edges.
+\end{theorem}
+
+\begin{theorem}[Conlon--Luo--Tyomkyn, 2022 — \arxiv{2204.11360}]
+Every $4$-edge-colouring of $\Kn$ contains a monochromatic connected subgraph spanning at least
+$\frac{1}{12}$ of the edges.
+\end{theorem}
+
+\section{Partição em subgrafos monocromáticos de grau limitado}
+
+
+Grinshpun e Sárközy (\arxiv{1405.7507}) estudam a partição de grafos completamente coloridos em subgrafos monocromáticos com grau máximo limitado, generalizando os resultados para caminhos e árvores.
+
+
+%%===================================================================
+\chapter{Grafos Completos: Componentes e Árvores}
+%%===================================================================
+
+\section{O Teorema de Gyárfás sobre componentes grandes}
+
+\begin{theorem}[Gyárfás, 1977]
+In every $r$-edge-colouring of $\Kn$, there is a monochromatic connected component with at least
+$\frac{n}{r-1}$ vertices.
+\end{theorem}
+
+\section{A Conjectura de Erdős--Gyárfás--Pyber para partição em árvores}
+
+\begin{conjecture}[Erdős--Gyárfás--Pyber, 1991 — parcialmente resolvida]
+$\mathrm{tp}_r(K_n) = r-1$, i.e., the vertices of every $r$-edge-coloured $K_n$ can be partitioned into
+$r-1$ monochromatic trees.
+\end{conjecture}
+
+\begin{theorem}[Haxell--Kohayakawa, 1995]
+For $n \geq (1-1/r)^{3(r-1)}$, $\mathrm{tp}_r(K_n) \leq r$.
+\end{theorem}
+
+
+\noindent Ou seja, $r$ árvores são suficientes (em vez das $r-1$ conjecturadas) para $n$ suficientemente grande.
+O resultado exato $r-1$ é conhecido apenas para $r \le 5$.
+
+
+\section{Generalização para hipergrafos completos}
+
+\begin{theorem}[Lichev--Luo, 2023 — \arxiv{2302.04487}]
+For a wide range of notions of connectivity in $r$-uniform hypergraphs, the size of the largest
+monochromatic component in any $r$-edge-colouring of the complete $r$-uniform hypergraph
+$K_n^{(r)}$ is $\Theta(n/(r-1))$, tight up to a factor of $1+o(1)$ as $r$ grows.
+\end{theorem}
+
+\begin{theorem}[Bal--DeBiasio, 2023 — \arxiv{2302.06669}]
+The Gyárfás theorem on large monochromatic components extends to the class of \emph{expansive hypergraphs}.
+\end{theorem}
+
+%%===================================================================
+\chapter{Grau Mínimo Alto}
+%%===================================================================
+
+
+Neste capítulo, o grafo hospedeiro $G$ não é necessariamente completo, mas tem grau mínimo $\dmin$ próximo de $n$.
+
+
+\section{A Conjectura de Balogh--Barát--Gerbner--Gyárfás--Sárközy e sua resolução}
+
+\begin{conjecture}[Balogh--Barát--Gerbner--Gyárfás--Sárközy, 2014 — \arxiv{1509.05544}]
+Let $G$ be a graph on $n$ vertices with $\delta(G) \geq \frac{3n}{4}$.
+Then for every $2$-edge-colouring of $G$, the vertex set $V(G)$ can be partitioned into two
+vertex-disjoint monochromatic cycles, one of each colour.
+\end{conjecture}
+
+\begin{theorem}[Letzter, 2015 — \arxiv{1502.07736}]
+There exists $n_0$ such that if $G$ is a graph on $n \geq n_0$ vertices with $\delta(G) \geq \frac{3n}{4}$
+and its edges are $2$-coloured, then $V(G)$ can be partitioned into two monochromatic cycles of different colours.
+\end{theorem}
+
+
+\noindent\textbf{Técnicas.} A prova usa o Regularity Lemma, o método de matchings conexos de Łuczak,
+e o método de absorção. O threshold $3n/4$ é sharp: existem exemplos com $\dmin = \lceil 3n/4 \rceil - 1$
+sem tal partição.
+
+
+\begin{theorem}[2022 — \arxiv{2204.00496}]
+A $2$-edge-coloured graph on $n$ vertices with $\delta(G) \geq \frac{2n}{3} + o(n)$ can be partitioned
+into \emph{three} monochromatic cycles.
+\end{theorem}
+
+\section{Condição de grau mínimo para $r$ cores}
+
+\begin{theorem}[Allen--Böttcher--Lang--Skokan--Stein, 2019 — \arxiv{1902.05882}]
+For $r \geq 2$ and $n$ sufficiently large, any $r$-edge-coloured graph $G$ on $n$ vertices with
+$\delta(G) \geq \frac{n}{2} + 1200r\log n$ admits a partition into $10^7 r^2$ monochromatic cycles.
+\end{theorem}
+
+
+\noindent A construção que mostra que o número de ciclos é essencialmente ótimo também é dada no artigo.
+
+
+\section{Condições tipo Ore e Pósa}
+
+\begin{theorem}[Arras, 2022 — \arxiv{2202.06388}]
+If $\deg(u)+\deg(v) \geq \frac{4n}{3}+o(n)$ for all non-adjacent $u,v \in V(G)$, then all but
+$o(n)$ vertices can be partitioned into two monochromatic cycles of distinct colours (approximate Ore-type version).
+\end{theorem}
+
+\section{Resultado geral para $r$ cores e grau $(1-\delta)n$}
+
+\begin{theorem}[Di Braccio--Patel, 2026 — \arxiv{2601.22117}]\label{thm:dibraccio}
+There exist constants $k, K > 0$ such that for all $r \geq 2$ and $\delta \in (0, 1/2)$,
+\[
+  kr\left\lceil\frac{r}{\log(1/\delta)}\right\rceil
+  \;\leq\; \cpr(\delta)
+  \;\leq\; Kr\log r \left\lceil\frac{r}{\log(1/\delta)}\right\rceil,
+\]
+where $\cpr(\delta)$ is the minimum number of cycles needed to cover any $r$-coloured $n$-vertex graph
+with $\delta(G) \geq (1-\delta)n$.
+\end{theorem}
+
+
+\noindent\textbf{Significado.} Este resultado de 2026 resolve (a menos de um fator $\log r$) a questão levantada
+independentemente por Letzter e Pokrovskiy. Também \textbf{disprova uma conjectura de Bal e DeBiasio}
+sobre coberturas com árvores monocromáticas.
+
+
+\section{Componentes monocromáticas e grau mínimo}
+
+\begin{theorem}[Guggiari--Scott, 2019 — \arxiv{1909.09178}]
+The maximum $\varepsilon$ such that every $3$-edge-colouring of an $n$-vertex graph with
+$\delta(G) \geq (1-\varepsilon)n$ contains a monochromatic component of order $\geq \frac{n}{2}$
+is $\varepsilon_3 = \frac{1}{6}$.
+\end{theorem}
+
+
+\noindent Este resultado \textbf{disprova uma conjectura de Gyárfás e Sárközy} que sugeria um valor maior para $\varepsilon_3$.
+
+
+\begin{theorem}[Bal--DeBiasio, 2023 — \arxiv{2301.05806}]
+In every $(k+1)$-edge-colouring of a $k$-uniform hypergraph on $n$ vertices with minimum
+$(k-1)$-degree $\geq \frac{kn}{k+1} - (k-1)$, there is a monochromatic component of order
+$\geq \frac{kn}{k+1}$. This bound on the codegree is best possible.
+\end{theorem}
+
+%%===================================================================
+\chapter{Grafos Aleatórios}
+%%===================================================================
+
+
+Neste capítulo, o grafo hospedeiro é o grafo aleatório binomial $G(n,p)$.
+O objetivo é determinar, em função de $p$ e $r$, quantos ciclos/árvores/componentes monocromáticos
+são necessários para cobrir os vértices com alta probabilidade (c.a.s.\ / w.h.p.).
+
+
+\section{Partição em componentes: extensão de Haxell--Kohayakawa}
+
+\begin{theorem}[Bal--DeBiasio, 2015 — \arxiv{1509.09168}]
+If $p \geq \left(\frac{27\log n}{n}\right)^{1/3}$, then w.h.p.\ every $2$-edge-colouring of $G(n,p)$
+admits a vertex-partition into two monochromatic components.
+Moreover, if $p = \omega(1)/n$, then w.h.p.\ every $r$-colouring of $G(n,p)$ contains a monochromatic
+component of order $\geq \left(1-o(1)\right)\frac{n}{r-1}$.
+\end{theorem}
+
+\section{Partição em ciclos: análogo aleatório de Erdős--Gyárfás--Pyber}
+
+\begin{theorem}[Korándi--Sárközy--Selkow, 2018 — \arxiv{1807.06607}]
+Let $r \geq 2$ and $p = p(n) \geq 29 r^5 n^{-1/(2r)}$. Then w.h.p.\ any $r$-edge-colouring of
+$G \sim G(n,p)$ admits a partition into at most $1000r^4\log r$ monochromatic cycles.
+\end{theorem}
+
+\begin{remark}
+A construction of Bal and DeBiasio shows that $p = o\!\left((r\log n/n)^{1/r}\right)$ is insufficient.
+The exact threshold is conjectured to be of order $(r\log n/n)^{1/r}$.
+\end{remark}
+
+\begin{theorem}[Korándi--Sudakov, 2017 — \arxiv{1712.03145}]
+For appropriate edge density $p$, any $r$-edge-colouring of $G(n,p)$ can be covered by
+$O(r^8\log r)$ vertex-disjoint monochromatic cycles.
+\end{theorem}
+
+\section{Árvores monocromáticas em grafos aleatórios}
+
+\begin{theorem}[Kohayakawa--Mota--Schacht, 2016 — \arxiv{1611.10299}]
+The threshold for the $2$-colour Ramsey tree-partition property
+(i.e., w.h.p.\ every $2$-colouring of $G(n,p)$ has a vertex-partition into two monochromatic trees of distinct colours)
+is determined.
+\end{theorem}
+
+\begin{theorem}[Bradač--Bucić, 2021 — \arxiv{2109.02569}]
+The problem of covering $G(n,p)$ with monochromatic components is connected to
+a Helly-type question for hypergraphs raised by Erdős, Hajnal, and Tuza.
+A modified version of this hypergraph problem controls the covering number more precisely.
+\end{theorem}
+
+\section{Hipergrafos aleatórios}
+
+\begin{theorem}[Bennett--DeBiasio--Dudek--English, 2017 — \arxiv{1709.02990}]
+The results of Gyárfás and Füredi on large monochromatic components in colourings of complete
+$k$-uniform hypergraphs extend to the random hypergraph setting. Long monochromatic loose cycles
+in $r$-coloured random hypergraphs are also studied.
+\end{theorem}
+
+\section{Componentes com muitas arestas em grafos aleatórios}
+
+\begin{theorem}[Fox--Luo, 2025 — \arxiv{2509.01766}]
+Results on the maximum number of edges in a monochromatic component in $r$-colourings of $K_n$
+(Luo for $r=3$; Conlon--Luo--Tyomkyn for $r=4$) extend to sparse random graphs and to graphs
+of large minimum degree.
+\end{theorem}
+
+%%===================================================================
+\chapter{Grafos Bipartidos}
+%%===================================================================
+
+\section{Caminhos longos em $K_{n,n}$: a Conjectura de Gyárfás--Lehel}
+
+\begin{theorem}[Gyárfás--Sárközy, 2018 — \arxiv{1806.05119}]
+In every $2$-edge-colouring of $K_{n,n}$, there exists a monochromatic path on at least $2\lceil n/2\rceil$ vertices.
+This bound is tight.
+\end{theorem}
+
+\begin{theorem}[Gyárfás--Sárközy, 2018 — \arxiv{1806.05119}]
+If $G$ is a balanced bipartite graph on $2n$ vertices with $\delta(G) \geq (3/4+o(1))n$, then in every
+$2$-edge-colouring of $G$ there exists a monochromatic cycle on at least $(1+o(1))n$ vertices,
+or the colouring is close to extremal.
+\end{theorem}
+
+\section{Partição de $K_{n,n}$ em caminhos}
+
+\begin{theorem}[Pokrovskiy, 2014]
+Let $G = K_{n,n}$ with edges $2$-coloured. If the colouring is \emph{not} a split colouring, then
+the vertices of $G$ can be partitioned into two monochromatic paths of different colours.
+\end{theorem}
+
+
+\noindent\textbf{Split colouring:} uma 2-coloração onde todas as arestas de um lado têm a mesma cor.
+
+
+\section{Partição em caminhos e ciclos: generalização para hipergrafos}
+
+\begin{theorem}[Stein, 2022 — \arxiv{2204.12464}]
+\textbf{(a)} Any $2$-edge-coloured complete $3$-uniform hypergraph $K_n^{(3)}$ can be partitioned into
+two monochromatic vertex-disjoint tight paths of different colours.\\
+\textbf{(b)} Any $2$-edge-coloured $K_{n,n}$ that is not a split colouring can be partitioned into
+a monochromatic path and a monochromatic cycle of different colours.
+\end{theorem}
+
+\begin{conjecture}[Stein, 2022 — \arxiv{2204.12464}]
+For any $r, n \in \mathbb{N}$, every $2$-edge-colouring of the $r$-uniform complete hypergraph $K_n^{(r)}$
+has a partition into two monochromatic vertex-disjoint tight paths of different colours.
+\end{conjecture}
+
+\section{Partição de $K_{n,n}$ em ciclos}
+
+\begin{theorem}[2024 — \arxiv{2409.03394}]
+For every $2$-edge-colouring of the complete balanced bipartite graph $K_{n,n}$, the vertices can be
+partitioned into at most $4$ monochromatic cycles.
+\end{theorem}
+
+
+\noindent\textbf{Nota.} O bound $4$ é esperado não ser ótimo; a conjectura é que $3$ ciclos bastam para $n$ grande.
+O limite inferior é $2r-1$ para $r$ cores gerais (construção simples por extensão dos resultados de $K_{n,n}$).
+
+
+\section{Coberturas em bipartidos aleatórios e de grau mínimo alto}
+
+\begin{theorem}[2024 — \arxiv{2403.12587}]
+\textbf{(a) [Random]} For $p \gg ({\log n}/n)^{1/2}$, w.h.p.\ every $2$-colouring of $G(n,n,p)$
+admits a cover of all but $O(1/p)$ vertices using at most $3$ vertex-disjoint monochromatic components.\\
+\textbf{(b) [Minimum degree]} Every $2$-colouring of a bipartite graph with parts of size $n$ and
+$\delta(G) \geq \left(\frac{13}{16}+o(1)\right)n$ admits a cover by at most $3$ monochromatic components.
+\end{theorem}
+
+\section{Colorações locais em bipartidos completos}
+
+\begin{theorem}[Gyárfás--Sárközy, 2015 — \arxiv{1501.05619}]
+For any $2$-local colouring of $K_{n,n}$
+(i.e., every vertex is incident with at most $2$ colours), the vertices can be covered by at most
+$3$ vertex-disjoint monochromatic paths.
+\end{theorem}
+
+\section{Componentes grandes em bipartidos}
+
+\begin{theorem}[DeBiasio--Krueger--Sárközy, 2018 — \arxiv{1806.05271}]
+In every $r$-edge-colouring of $K_{m,n}$, there is a monochromatic connected component with at least
+$\frac{m+n}{r}$ vertices.
+\end{theorem}
+
+\begin{conjecture}[DeBiasio--Krueger--Sárközy, 2018 — \arxiv{1806.05271}]\label{conj:bipartite-comp}
+In every $r$-edge-colouring of a bipartite graph $G$ with parts $X$ and $Y$ ($|X|=m$, $|Y|=n$),
+$\delta(X,Y) > \left(1-\frac{1}{r+1}\right)n$ and $\delta(Y,X) > \left(1-\frac{1}{r+1}\right)m$,
+there is a monochromatic component on $\geq \frac{m+n}{r}$ vertices.
+(Proved for $r=2$; weaker bound for $r \geq 3$.)
+\end{conjecture}
+
+\begin{theorem}[Füredi--Luo, 2020 — \arxiv{2008.12217}]
+``Almost complete'' graphs (i.e., $K_n$ minus few edges) and almost complete bipartite graphs retain the Gyárfás property:
+every $(t+1)$-edge-colouring contains a monochromatic component of order $\geq n/t$.
+\end{theorem}
+
+\section{Ciclos em bipartidos com grau mínimo alto}
+
+\begin{theorem}[Zhang--Peng--Luo, 2023 — \arxiv{2304.08003}]
+For any $m > n$, if $G$ is a balanced bipartite graph of order $2(m+n-1)$ with
+$\delta(G) > \frac{3}{4}(m+n-1)$, then $G \to (C_m^M, C_n^M)$, where $C_i^M$ denotes a
+monochromatic cycle of length $i$.
+\end{theorem}
+
+%%===================================================================
+\chapter{Grafos Multipartidos}
+%%===================================================================
+
+\section{Cobertura de grafos $k$-partidos com 2 caminhos}
+
+\begin{theorem}[Schaudt--Stein, 2014 — \arxiv{1407.5083}]\label{thm:multipartite-paths}
+Let $G$ be a complete $k$-partite graph on $n$ vertices, $k \geq 3$, whose edges are $2$-coloured.
+If the largest partition class contains at most $n/2$ vertices (\emph{fair} colouring), then the vertices
+of $G$ can be covered by two vertex-disjoint monochromatic paths of distinct colours.
+\end{theorem}
+
+\begin{theorem}[Schaudt--Stein, 2014 — \arxiv{1407.5083}]
+Under the same hypotheses, all but $o(n)$ vertices can be covered by two monochromatic cycles,
+provided the colouring is not close to a split colouring.
+Consequently, for large enough $n$, the whole graph can be partitioned into at most $14$ monochromatic cycles.
+\end{theorem}
+
+\section{Caminhos e ciclos longos em multipartidos}
+
+\begin{theorem}[Balogh--Kostochka--Lavrov--Liu, 2019 — \arxiv{1905.04657}]
+For fixed $s$ and large $n$, and for every $2$-edge-colouring of $K_{n_1,\ldots,n_s}$, exact conditions
+on $n_1,\ldots,n_s$ are determined for the existence of:
+\begin{itemize}
+  \item a monochromatic even cycle $C_{2n}$;
+  \item a monochromatic cycle $C_{\geq 2n}$;
+  \item a monochromatic path $P_{2n}$;
+  \item a monochromatic path $P_{2n+1}$.
+\end{itemize}
+In particular, this confirms for large $n$ the Gyárfás--Ruszinkó--Sárközy--Szemerédi conjecture that
+in every $2$-colouring of $\Knnn$ there is a monochromatic path $P_{2n+1}$.
+\end{theorem}
+
+\begin{theorem}[Balogh--Kostochka--Lavrov--Liu, 2019 — \arxiv{1905.04653}]
+Exact Ramsey-type bounds on the sizes of monochromatic connected matchings in $2$-edge-coloured
+complete multipartite graphs, together with a stability theorem.
+\end{theorem}
+
+
+\noindent\textbf{Nota.} Um \emph{matching conexo} é um matching cujas arestas pertencem todas à mesma componente conexa do grafo.
+Este conceito, introduzido por Łuczak, é a ferramenta central para reduzir problemas de caminhos/ciclos em grafos regulares.
+
+
+\section{Hipergrafos $r$-partidos: cobertura com poucos componentes}
+
+\begin{theorem}[Hawranick--Luo, 2026 — \arxiv{2603.04704}]
+For $k \geq 2r \geq 6$, in any spanning $k$-edge-colouring of a complete $r$-partite $r$-uniform hypergraph $H$,
+the vertices of $H$ can be covered by at most $k-r+1$ monochromatic connected components.
+Moreover, for $k \in \{2,3\}$, every spanning $k$-edge-colouring of a complete bipartite graph admits
+a covering using at most $k$ monochromatic components.
+\end{theorem}
+
+
+\noindent\textbf{Significado.} Este resultado de 2026 prova uma conjectura de Gyárfás e Király, que é um caso especial
+da \emph{Conjectura de Ryser} (\Cref{conj:ryser}).
+
+
+\section{Hipergrafos partidos: cobertura clássica}
+
+\begin{theorem}[Gyárfás--Király, 2016 — \arxiv{1604.02791}]
+In every $k$-colouring of a complete $r$-uniform $r$-partite hypergraph, the vertices can be covered
+by at most $\lceil k/r \rceil$ monochromatic connected components.
+\end{theorem}
+
+%%===================================================================
+\chapter{Problemas Abertos e Conjecturas}
+%%===================================================================
+
+
+Este capítulo compila os principais problemas em aberto identificados nos 44 artigos desta compilação.
+São organizados por dificuldade e relevância para a qualificação.
+
+
+\begin{problem}[Conjectura de Gyárfás — Caminhos em $r$ cores]
+Prove \Cref{conj:gyarfas-paths}: the vertices of every $r$-edge-coloured $K_n$ can be covered by
+$r$ vertex-disjoint monochromatic paths.
+
+\medskip\noindent
+\textit{Status:} Proved for $r=2$ (Gerencsér--Gyárfás), $r=3$ (Pokrovskiy 2014). Open for $r \geq 4$.
+\end{problem}
+
+\begin{problem}[Conjectura de Erdős--Gyárfás--Pyber — Ciclos, versão enfraquecida]
+Is $\mathrm{cp}_r(K_n) = O(r)$? The current best bound is $O(r\log r)$.
+\end{problem}
+
+\begin{problem}[Conjectura de Pokrovskiy — 3 ciclos com $\delta \geq 2n/3$]
+Show that every $2$-edge-coloured $n$-vertex graph with $\delta(G) \geq \frac{2n}{3}$ can be exactly
+partitioned into $3$ monochromatic cycles.
+
+\medskip\noindent
+\textit{Status:} Proved approximately by Allen et al.; the exact version is open.
+\end{problem}
+
+\begin{problem}[Conjectura de Bal--DeBiasio — Threshold para árvores em $G(n,p)$]
+Is the threshold for $\mathrm{tp}_r(G(n,p)) \leq r$ equal to $p = (1+\varepsilon)(r\log n/n)^{1/r}$?
+
+\medskip\noindent
+\textit{Status:} Confirmed for $r=2$ (Kohayakawa--Mota--Schacht). Open for $r \geq 3$.
+Note: Di Braccio--Patel 2026 disproved a related tree-covering conjecture.
+\end{problem}
+
+\begin{problem}[Conjectura de Gyárfás--Lehel — Componentes em bipartidos]
+Prove \Cref{conj:bipartite-comp}: in every $r$-edge-colouring of a bipartite graph with parts of size $m,n$
+and appropriate minimum degree, there is a monochromatic component on $\geq \frac{m+n}{r}$ vertices.
+
+\medskip\noindent
+\textit{Status:} Proved for $r=2$; weaker bounds for $r \geq 3$.
+\end{problem}
+
+\begin{problem}[Partição de $K_{n,n}$ em ciclos]
+Is $\mathrm{cp}_2(K_{n,n}) = 3$? (Currently proved $\leq 4$.)
+\end{problem}
+
+\begin{problem}[Conjectura de Stein — hipergrafos]
+Prove that for any $r, n \in \mathbb{N}$, every $2$-colouring of $K_n^{(r)}$ has a partition
+into two monochromatic tight paths of different colours.
+
+\medskip\noindent
+\textit{Status:} Proved for $r=2$ (trivial) and $r=3$ (Stein, 2022). Open for $r \geq 4$.
+\end{problem}
+
+\begin{problem}[Conjectura de Ryser]\label{prob:ryser}
+Prove \Cref{conj:ryser}: $\mathrm{tc}_r(G) \leq (r-1)\alpha(G)$ for every graph $G$.
+
+\medskip\noindent
+\textit{Status:} Proved for $r \leq 5$ (when $\alpha(G)=1$, i.e., $G=K_n$).
+The case $r=3$ for general graphs was proved by Aharoni. Open for $r \geq 4$ and $\alpha \geq 2$.
+\end{problem}
+
+\begin{problem}[Factor $\log r$ em \Cref{thm:dibraccio}]
+Is the $\log r$ factor in the upper bound of Di Braccio--Patel (2026) necessary?
+Can $\mathrm{cp}_r(\delta) = \Theta\!\left(r \cdot \lceil r/\log(1/\delta)\rceil\right)$ be proved without the $\log r$?
+\end{problem}
+
+\begin{problem}[Componentes com muitas arestas para $r \geq 5$]
+Determine $\inf_c$ such that every $r$-edge-colouring of $K_n$ contains a monochromatic component
+with $\geq c \cdot \binom{n}{2}$ edges, for $r \geq 5$.
+
+\medskip\noindent
+\textit{Status:} $r=3 \Rightarrow c=1/6$ (Luo); $r=4 \Rightarrow c=1/12$ (Conlon--Luo--Tyomkyn). Open for $r \geq 5$.
+\end{problem}
+
+%%===================================================================
+\chapter*{Referências / Bibliography}
+\addcontentsline{toc}{chapter}{Referências / Bibliography}
+%%===================================================================
+
+
+\noindent Os 44 artigos desta compilação estão organizados abaixo por identificador arXiv.
+Todos os PDFs foram baixados e estão disponíveis na raiz do repositório.
+
+
+\begin{enumerate}[label={[\arabic*]}, leftmargin=2cm]
+\item Pokrovskiy, A.\ (2012). Partitioning edge-coloured complete graphs into monochromatic cycles and paths. \arxiv{1205.5492}
+
+\item Gyárfás, A.\ (2015). Vertex covers by monochromatic pieces — A survey. \arxiv{1509.05539}
+
+\item Gyárfás, A.\ (2017). Vertex covering with monochromatic pieces of few colours. \arxiv{1711.01557}
+
+\item Gyárfás, A.; Király, Z.\ (2016). Covering complete partite hypergraphs by monochromatic components. \arxiv{1604.02791}
+
+\item Grinshpun, A.; Sárközy, G.N.\ (2014). Monochromatic bounded degree subgraph partitions. \arxiv{1405.7507}
+
+\item Gyárfás, A.; Sárközy, G.N.\ (2014). Monochromatic cycle partitions in local edge colourings. \arxiv{1403.5975}
+
+\item Balogh, J.; Barát, J.; Gerbner, D.; Gyárfás, A.; Sárközy, G.N.\ (2015). Partitioning 2-edge-colored graphs by monochromatic paths and cycles. \arxiv{1509.05544}
+
+\item Bal, D.; DeBiasio, L.\ (2015). Partitioning random graphs into monochromatic components. \arxiv{1509.09168}
+
+\item Letzter, S.\ (2015). Monochromatic cycle partitions of 2-coloured graphs with minimum degree $3n/4$. \arxiv{1502.07736}
+
+\item Schaudt, O.; Stein, M.\ (2014). Partitioning two-coloured complete multipartite graphs into monochromatic paths and cycles. \arxiv{1407.5083}
+
+\item Gyárfás, A.; Sárközy, G.N.\ (2015). Local colourings and monochromatic partitions in complete bipartite graphs. \arxiv{1501.05619}
+
+\item Kohayakawa, Y.; Mota, G.O.; Schacht, M.\ (2016). Monochromatic trees in random graphs. \arxiv{1611.10299}
+
+\item Korándi, D.; Sudakov, B.\ (2017). Monochromatic cycle covers in random graphs. \arxiv{1712.03145}
+
+\item Bennett, P.; DeBiasio, L.; Dudek, A.; English, S.\ (2017). Large monochromatic components and long monochromatic cycles in random hypergraphs. \arxiv{1709.02990}
+
+\item DeBiasio, L.; Krueger, R.A.; Sárközy, G.N.\ (2018). Large monochromatic components in multicolored bipartite graphs. \arxiv{1806.05271}
+
+\item Gyárfás, A.; Sárközy, G.N.\ (2018). Long monochromatic paths and cycles in 2-colored bipartite graphs. \arxiv{1806.05119}
+
+\item Korándi, D.; Sárközy, G.N.; Selkow, S.\ (2018). Monochromatic cycle partitions in random graphs. \arxiv{1807.06607}
+
+\item Allen, P.; Böttcher, J.; Lang, R.; Skokan, J.; Stein, M.\ (2019). Minimum degree conditions for monochromatic cycle partitioning. \arxiv{1902.05882}
+
+\item Balogh, J.; Kostochka, A.; Lavrov, M.; Liu, X.\ (2019). Monochromatic connected matchings in 2-edge-colored multipartite graphs. \arxiv{1905.04653}
+
+\item Balogh, J.; Kostochka, A.; Lavrov, M.; Liu, X.\ (2019). Long monochromatic paths and cycles in 2-edge-colored multipartite graphs. \arxiv{1905.04657}
+
+\item Balogh, J.; Kostochka, A.; Lavrov, M.; Liu, X.\ (2019). Monochromatic paths and cycles in 2-edge-colored graphs with large minimum degree. \arxiv{1906.02854}
+
+\item Guggiari, H.; Scott, A.\ (2019). Monochromatic components in edge-coloured graphs with large minimum degree. \arxiv{1909.09178}
+
+\item (2020). Covering 3-edge-coloured random graphs with monochromatic trees. \arxiv{2006.14469}
+
+\item Füredi, Z.; Luo, R.\ (2020). Large monochromatic components in almost complete graphs and bipartite graphs. \arxiv{2008.12217}
+
+\item Bradač, D.; Bucić, M.\ (2021). Covering random graphs with monochromatic trees. \arxiv{2109.02569}
+
+\item Luo, S.\ (2021). On connected components with many edges. \arxiv{2111.13342}
+
+\item Arras, P.\ (2022). Ore- and Pósa-type conditions for partitioning 2-edge-coloured graphs into monochromatic cycles. \arxiv{2202.06388}
+
+\item (2022). Partitioning a 2-edge-coloured graph of minimum degree $2n/3+o(n)$ into three monochromatic cycles. \arxiv{2204.00496}
+
+\item Conlon, D.; Luo, S.; Tyomkyn, M.\ (2022). Monochromatic components with many edges. \arxiv{2204.11360}
+
+\item Stein, M.\ (2022). Monochromatic paths in 2-edge coloured graphs and hypergraphs. \arxiv{2204.12464}
+
+\item Bal, D.; DeBiasio, L.\ (2023). Large monochromatic components in hypergraphs with large minimum codegree. \arxiv{2301.05806}
+
+\item Lichev, L.; Luo, S.\ (2023). Large monochromatic components in colorings of complete hypergraphs. \arxiv{2302.04487}
+
+\item Bal, D.; DeBiasio, L.\ (2023). Large monochromatic components in expansive hypergraphs. \arxiv{2302.06669}
+
+\item Zhang, Y.; Peng, Y.; Luo, Z.\ (2023). Monochromatic cycles in 2-edge-colored bipartite graphs with large minimum degree. \arxiv{2304.08003}
+
+\item (2024). Monochromatic partitions in 2-edge-coloured bipartite graphs. \arxiv{2403.12587}
+
+\item (2024). Partitioning 2-edge-coloured bipartite graphs into monochromatic cycles. \arxiv{2409.03394}
+
+\item Pokrovskiy, A.; Versteegen, L.; Williams, E.\ (2024). A proof of a conjecture of Erdős and Gyárfás on monochromatic path covers. \arxiv{2409.03623}
+
+\item Fox, H.; Luo, S.\ (2025). Monochromatic components with many edges in random graphs. \arxiv{2509.01766}
+
+\item Di Braccio, F.; Patel, V.\ (2026). Monochromatic cycle partitions of $r$-edge-coloured graphs with high minimum degree. \arxiv{2601.22117}
+
+\item Hawranick, L.; Luo, R.\ (2026). Covering complete $r$-partite hypergraphs with few monochromatic components. \arxiv{2603.04704}
+
+\item Girão, A.; Letzter, S.; Sahasrabudhe, J.\ Partitioning a graph into monochromatic connected subgraphs. \arxiv{1708.01284}
+
+\end{enumerate}
+
+\end{document}

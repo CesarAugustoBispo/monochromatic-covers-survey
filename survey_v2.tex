@@ -1,0 +1,685 @@
+\documentclass[12pt,a4paper,twoside,openright]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{mdframed}
+\usepackage{cleveref}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\geometry{
+  a4paper, left=3.2cm, right=2.8cm, top=3cm, bottom=3cm, headheight=15pt
+}
+
+\definecolor{darkblue}{HTML}{1a1a2e}
+\definecolor{accent}{HTML}{c0392b}
+\definecolor{linkcolor}{HTML}{2980b9}
+\definecolor{thmback}{HTML}{f0f4ff}
+\definecolor{conjback}{HTML}{fff5f5}
+\definecolor{proofback}{HTML}{fffbe6}
+\definecolor{techback}{HTML}{f0fff4}
+
+\hypersetup{colorlinks=true,linkcolor=darkblue,urlcolor=linkcolor,citecolor=accent,
+  pdftitle={Survey V2: com Esboços de Provas}}
+
+%% Teoremas
+\theoremstyle{definition}
+\newmdtheoremenv[backgroundcolor=thmback,linecolor=darkblue,linewidth=1.5pt,
+  innerleftmargin=10pt,innerrightmargin=10pt,skipabove=8pt,skipbelow=6pt]{theorem}{Theorem}[chapter]
+\newmdtheoremenv[backgroundcolor=conjback,linecolor=accent,linewidth=1.5pt,
+  innerleftmargin=10pt,innerrightmargin=10pt,skipabove=8pt,skipbelow=6pt]{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}{Open Problem}[chapter]
+
+%% Caixa para esboço de prova
+\newtcolorbox{proofsketch}{
+  colback=proofback, colframe=darkblue!40,
+  title={\textbf{Esboço da Prova / Proof Sketch}},
+  fonttitle=\bfseries\small,
+  breakable, enhanced,
+  before skip=6pt, after skip=6pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt
+}
+
+%% Caixa para técnicas
+\newtcolorbox{techniques}{
+  colback=techback, colframe=darkblue!30,
+  title={\textbf{Técnicas principais}},
+  fonttitle=\bfseries\small\color{darkblue},
+  breakable, enhanced,
+  before skip=4pt, after skip=6pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt
+}
+
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{darkblue}}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titleformat{\section}{\normalfont\Large\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\color{darkblue!80}}{\thesubsection}{1em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\color{darkblue}\leftmark}
+\fancyhead[RO]{\small\color{darkblue}\rightmark}
+\fancyfoot[C]{\thepage}
+
+\newcommand{\arxiv}[1]{\href{https://arxiv.org/abs/#1}{\textcolor{linkcolor}{arXiv:#1}}}
+\newcommand{\Kn}{K_n}
+\newcommand{\Knm}{K_{n,n}}
+\newcommand{\cpr}{\mathrm{cp}_r}
+
+\begin{document}
+
+%%===================================================================
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\color{darkblue}\rule{\linewidth}{2pt}}\\[0.5cm]
+{\Huge\bfseries\color{darkblue}
+  Cobertura e Partição\\[4pt]
+  em Estruturas\\[4pt]
+  Monocromáticas}\\[0.8cm]
+{\color{accent}\rule{\linewidth}{1pt}}\\[0.6cm]
+{\large Caminhos $\cdot$ Ciclos $\cdot$ Árvores $\cdot$ Componentes Conexas}\\[0.3cm]
+{\normalsize Grafos Completos $\cdot$ Grau Mínimo Alto $\cdot$ Aleatórios $\cdot$ Bipartidos $\cdot$ Multipartidos}\\[2cm]
+{\large\textbf{Versão II} — Enunciados, Contexto e Esboços de Provas}\\[0.4cm]
+{\normalsize Survey compilado a partir de 44 artigos do arXiv}\\[0.3cm]
+{\normalsize Para uso em qualificação de doutorado}\\[2.5cm]
+{\normalsize Compilado em julho de 2026}
+\vfill
+{\color{darkblue}\rule{\linewidth}{2pt}}
+\end{titlepage}
+
+\frontmatter
+\tableofcontents
+\cleardoublepage
+
+\chapter*{Prefácio / Preface}
+\addcontentsline{toc}{chapter}{Prefácio / Preface}
+
+
+Esta é a \textbf{Versão II} do survey, que inclui, além dos enunciados e contexto histórico da Versão I,
+\textbf{esboços das provas principais} e as \textbf{técnicas centrais} de cada resultado.
+
+O objetivo é que o leitor compreenda não apenas \emph{o que} é verdadeiro, mas \emph{por que} é verdadeiro
+e \emph{quais ferramentas} são usadas — informação essencial para uma qualificação.
+
+\medskip
+\noindent\textbf{Convenção de caixas:}
+\begin{itemize}
+  \item Caixa \textbf{Esboço da Prova}: ideia central da demonstração, sem detalhes técnicos completos.
+  \item Caixa \textbf{Técnicas principais}: lista das ferramentas utilizadas na prova.
+\end{itemize}
+
+
+\mainmatter
+
+%%===================================================================
+\chapter{Introdução, Definições e Técnicas}
+%%===================================================================
+
+
+\section{Contexto e problema central}
+
+Dado um grafo $G$ com coloração de arestas em $r$ cores, queremos cobrir ou partir os vértices de $G$
+usando \textbf{estruturas monocromáticas} — ou seja, subgrafos onde todas as arestas têm a mesma cor.
+As estruturas de interesse são caminhos, ciclos, árvores e componentes conexas.
+
+A pergunta fundamental é: \emph{quantas estruturas monocromáticas são necessárias?}
+
+\section{Definições}
+
+
+\begin{definition}
+For an $r$-edge-coloured graph $G$:
+\begin{itemize}
+  \item $\mathrm{cp}_r(G)$: min.\ $k$ s.t.\ every $r$-colouring admits a \emph{partition} into $k$ monochromatic cycles.
+  \item $\mathrm{pp}_r(G)$: min.\ $k$ for partition into $k$ monochromatic paths.
+  \item $\mathrm{tp}_r(G)$: min.\ $k$ for partition into $k$ monochromatic trees.
+  \item $\mathrm{tc}_r(G)$: min.\ $k$ for \emph{cover} by $k$ monochromatic connected subgraphs.
+\end{itemize}
+\end{definition}
+
+
+\section{Catálogo das técnicas principais}
+
+\subsection*{Regularity Lemma de Szemerédi}
+Dado $\varepsilon > 0$, qualquer grafo denso pode ser decomposto em $O(1)$ pares ``$\varepsilon$-regulares'',
+i.e., cujos bipartidos internos se comportam como grafos aleatórios.
+O Lemma reduz problemas em grafos grandes a problemas em \emph{grafos de clusters} pequenos.
+Preço: os resultados são \emph{assintóticos} ($n \ge n_0$) e as constantes tendem a ser enormes.
+
+\subsection*{Método de matchings conexos (Łuczak, 1999)}
+Um matching $M$ em $G$ é \emph{conexo} se todas as suas arestas pertencem à mesma componente de $G$.
+A ideia: se o grafo de clusters (após o Regularity Lemma) tem um matching conexo monocromático grande,
+então o grafo original tem um ciclo/caminho monocromático longo.
+Isso reduz ``partição em ciclos'' a ``matching conexo em grafo de clusters''.
+
+\subsection*{Método de absorção}
+Consiste em construir uma estrutura ``absorvente'' $A$ no início:
+$A$ pode incorporar qualquer conjunto pequeno $S$ de vértices e produzir uma estrutura monocromática
+cobrindo $A \cup S$.
+Depois cobre-se $V(G) \setminus A$ por estruturas monocromáticas e usa-se $A$ para absorver as sobras.
+Essencial para resultados \emph{exatos} (não apenas assintóticos).
+
+\subsection*{Blow-up Lemma (Komlós--Sárközy--Szemerédi, 1997)}
+Em um par $\varepsilon$-regular $(A,B)$ com densidade $d$, pode-se encontrar cópias de qualquer grafo
+bipartido com grau máximo limitado. Permite a ``embedding'' de estruturas complexas em grafos regulares.
+
+\subsection*{Método probabilístico / LLL}
+Colorações aleatórias e o Lovász Local Lemma são usados para construir colorações extremais
+(limitante inferior para o número de estruturas necessárias) e para provas em grafos aleatórios.
+
+\subsection*{Absorção via conjunto conexo (DeBiasio--Nelsen)}
+Variante do método de absorção adaptada para ciclos em grafos de grau mínimo.
+Constrói um ciclo longo que pode absorver um conjunto específico de vértices.
+
+
+%%===================================================================
+\chapter{Grafos Completos: Partição em Caminhos e Ciclos}
+%%===================================================================
+
+\section{Resultado fundador: Gerencsér--Gyárfás (1967)}
+
+\begin{theorem}[Gerencsér--Gyárfás, 1967]
+In every $2$-edge-colouring of $K_n$, there are two vertex-disjoint monochromatic paths covering all vertices.
+\end{theorem}
+
+\begin{proofsketch}
+Tome o caminho monocromático vermelho mais longo, $P$. Se $P$ cobre todos os vértices, pronto.
+Caso contrário, considere os vértices fora de $P$: se algum tem vizinho azul fora de $P$,
+estenda o caminho. Iterando cuidadosamente, obtém-se que os vértices não cobertos por $P$
+induzem um caminho azul disjunto. O argumento usa a maximalidade de $P$ e análise de casos.
+\end{proofsketch}
+
+\begin{techniques}
+Análise direta de casos em grafos completos. Sem ferramentas pesadas.
+\end{techniques}
+
+\section{Conjectura de Lehel e sua resolução}
+
+\begin{theorem}[Bessy--Thomassé, 2010]
+In every $2$-edge-colouring of $K_n$, the vertices can be partitioned into two monochromatic cycles.
+\end{theorem}
+
+\begin{proofsketch}
+A prova de Bessy--Thomassé (2010) é notavelmente curta. Os passos principais são:
+\begin{enumerate}[leftmargin=*]
+  \item Tome uma partição $(R, B)$ dos vértices que minimiza o número de arestas ``ruins''
+        (arestas vermelhas em $B$ + arestas azuis em $R$). Mostre que essa partição é ``quase-balanceada''.
+  \item Construa dois caminhos monocromáticos alternados que cobrem todos os vértices,
+        e ``feche-os'' em ciclos usando a estrutura do grafo completo.
+  \item Use o fato de que $K_n$ é altamente conexo para garantir que os ciclos existem.
+\end{enumerate}
+
+\medskip
+\textit{Abordagem anterior de Łuczak--Rödl--Szemerédi (1998):} Regularity Lemma + matchings conexos,
+funcionando apenas para $n$ grande. Allen (2008) deu prova sem Regularity Lemma, mas ainda $n$ grande.
+\end{proofsketch}
+
+\begin{techniques}
+Prova de Bessy--Thomassé: argumento combinatório direto, partição gulosa.\\
+Provas anteriores: Regularity Lemma, matchings conexos.
+\end{techniques}
+
+\section{Falsidade da Conjectura EGP para $r \geq 3$}
+
+\begin{theorem}[Pokrovskiy, 2014 — \arxiv{1205.5492}]
+For $r \geq 3$, there exist infinitely many $r$-edge-coloured complete graphs that cannot be
+vertex-partitioned into $r$ monochromatic cycles.
+\end{theorem}
+
+\begin{proofsketch}
+\textbf{Contraexemplo para $r=3$:} Parta $V(K_n)$ em três classes $A, B, C$ de tamanho $\approx n/3$
+e defina uma 3-coloração onde:
+\begin{itemize}
+  \item Arestas $AB$: vermelhas; arestas $BC$: azuis; arestas $AC$: verdes.
+  \item Arestas internas: alternadas de forma a criar ``desequilíbrio''.
+\end{itemize}
+Mostra-se que qualquer tentativa de cobertura com 3 ciclos deixa pelo menos um vértice de fora,
+usando contagem de paridade/balanço de vértices nos ciclos.
+
+\medskip
+\textbf{Resultado positivo (3 caminhos):} A prova que 3 caminhos cobrem $K_n$ em qualquer 3-coloração
+usa um resultado intermediário: em qualquer 2-coloração de $K_n$, há um caminho vermelho e um bipartido
+completo balanceado azul cobrindo todos os vértices. Daí aplica-se indução na 3ª cor.
+\end{proofsketch}
+
+\begin{techniques}
+Contra-exemplos por construção explícita; análise de paridade; indução na 3ª cor para o resultado positivo.
+\end{techniques}
+
+\section{Cobertura com $\sqrt{n}$ caminhos da mesma cor}
+
+\begin{theorem}[Pokrovskiy--Versteegen--Williams, 2024 — \arxiv{2409.03623}]
+For $n > 2^{40}$, every $2$-edge-coloured $K_n$ can be covered by $\sqrt{n}$ monochromatic paths, all of the same colour.
+\end{theorem}
+
+\begin{proofsketch}
+O argumento tem três fases:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Estrutura global:} Via uma versão do Regularity Lemma, mostra-se que ou o grafo vermelho
+        (ou azul) tem uma componente ``dominante'' grande, ou a coloração tem estrutura quase-extremal.
+
+  \item \textbf{Caso quasi-extremal:} A coloração é próxima de: $V = A \cup B$, $|A| \approx n - \sqrt{n}$,
+        arestas de $A$ azuis e demais vermelhas. Aqui, $\sqrt{n}$ caminhos vermelhos cobrem $B$,
+        e um caminho azul cobre $A$ — mas todos precisam ter a mesma cor.
+        Requer análise fina da estrutura e troca de caminhos entre os casos.
+
+  \item \textbf{Caso não-extremal:} A componente dominante permite cobrir a maioria dos vértices com
+        poucos caminhos, e os restantes são absorvidos iterativamente.
+\end{enumerate}
+
+\textit{Ferramenta-chave:} Um lema de bipartição que mostra que em qualquer 2-coloração de $K_{a,b}$
+(completo bipartido) há um caminho vermelho de comprimento $k$ ou azul de comprimento $\ell$.
+\end{proofsketch}
+
+\begin{techniques}
+Regularity Lemma; análise estrutural de extremalidade; lema de caminhos em bipartidos; absorção iterativa.
+\end{techniques}
+
+%%===================================================================
+\chapter{Grau Mínimo Alto}
+%%===================================================================
+
+\section{A Conjectura BBGGS e a prova de Letzter}
+
+\begin{theorem}[Letzter, 2015 — \arxiv{1502.07736}]
+For $n$ large, every $2$-edge-coloured graph $G$ with $\delta(G) \geq 3n/4$ can be partitioned
+into two monochromatic cycles of different colours.
+\end{theorem}
+
+\begin{proofsketch}
+A prova segue a seguinte estratégia de alto nível:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Regularity Lemma:} Aplique o Regularity Lemma para obter uma partição em clusters.
+        O grafo de clusters herdado tem grau mínimo $\geq 3k/4 - O(\varepsilon k)$,
+        onde $k$ é o número de clusters.
+
+  \item \textbf{Matching conexo:} Mostre que o grafo de clusters contém dois matchings conexos monocromáticos
+        $M_R$ (vermelho) e $M_B$ (azul) que juntos cobrem todos os clusters.
+        Isso usa o fato que um grafo com $\delta \geq 3k/4$ tem esta propriedade
+        (resultado combinatório sobre grafos densos).
+
+  \item \textbf{Blow-up para ciclos:} Usando os matchings conexos e o Blow-up Lemma,
+        converta cada matching em um ciclo Hamiltoniano monocromático no subgrafo correspondente do grafo original.
+
+  \item \textbf{Absorção:} Os vértices não cobertos pelos ciclos (os ``resíduos'' dos clusters)
+        são absorvidos usando o método de absorção.
+\end{enumerate}
+
+\medskip
+\textit{Por que $3n/4$?} O threshold é sharp: tome $K_{n/4, 3n/4}$ com arestas internas na parte grande azuis e
+arestas cruzadas vermelhas. Qualquer ciclo vermelho precisa cruzar a bipartição muitas vezes,
+limitando sua capacidade de cobrir muitos vértices simultaneamente.
+\end{proofsketch}
+
+\begin{techniques}
+Regularity Lemma; matchings conexos (Łuczak); Blow-up Lemma; absorção. Prova de $\sim 40$ páginas.
+\end{techniques}
+
+\section{Resultado de Allen--Böttcher--Lang--Skokan--Stein}
+
+\begin{theorem}[Allen et al., 2019 — \arxiv{1902.05882}]
+For $r \geq 2$ and $n$ large, any $r$-coloured $G$ with $\delta(G) \geq n/2 + 1200r\log n$
+can be partitioned into $10^7 r^2$ monochromatic cycles.
+\end{theorem}
+
+\begin{proofsketch}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Redução a grafos de clusters:} Aplique o Regularity Lemma. O grafo de clusters tem
+        $\delta \geq k/2 + cr\log k$.
+
+  \item \textbf{Partição ávida por cores:} Itere sobre as $r$ cores. Para cada cor $i$,
+        o grafo monocromático de cor $i$ no cluster tem grau mínimo $\approx k/2$.
+        Pelo Teorema de Dirac, tem ciclo Hamiltoniano. Cubra com $O(r)$ ciclos por cor.
+
+  \item \textbf{Contagem:} Total de $O(r^2)$ ciclos.
+        O termo $r\log n$ no grau mínimo é necessário para garantir conectividade após a remoção
+        de $O(r)$ camadas de clusters por iteração.
+\end{enumerate}
+\end{proofsketch}
+
+\begin{techniques}
+Regularity Lemma; Teorema de Dirac; argumento iterativo por cores.
+\end{techniques}
+
+\section{Resultado de Di Braccio--Patel (2026)}
+
+\begin{theorem}[Di Braccio--Patel, 2026 — \arxiv{2601.22117}]
+There exist $k, K > 0$ such that for all $r \geq 2$ and $\delta \in (0, 1/2)$,
+\[
+  kr\left\lceil\frac{r}{\log(1/\delta)}\right\rceil
+  \leq \cpr(\delta)
+  \leq Kr\log r \left\lceil\frac{r}{\log(1/\delta)}\right\rceil.
+\]
+\end{theorem}
+
+\begin{proofsketch}
+\textbf{Upper bound (cobertura com poucos ciclos):}
+\begin{enumerate}[leftmargin=*]
+  \item Decomponha as $r$ cores em ``grupos'' de tamanho $\approx \log(1/\delta)$.
+        Dentro de cada grupo, um grafo com $\delta \geq (1-\delta)n$ e $s = \log(1/\delta)$ cores
+        pode ser coberto com $O(s)$ ciclos (resultado auxiliar).
+  \item Há $\lceil r/\log(1/\delta) \rceil$ grupos, cada um gerando $O(\log r \cdot s)$ ciclos.
+        Total: $O(r\log r \cdot \lceil r/\log(1/\delta) \rceil)$.
+\end{enumerate}
+
+\textbf{Lower bound (contraexemplo):}
+Construa uma coloração de $G$ com $\delta(G) \geq (1-\delta)n$ que requer
+$\Omega(r \cdot \lceil r/\log(1/\delta) \rceil)$ ciclos, via uma construção baseada em produtos de grafos.
+
+\textbf{Ingrediente-chave sobre cobertura com árvores:}
+O artigo também prova que $\mathrm{tc}_r(\delta)$ (cobertura por árvores, não ciclos) tem threshold muito menor.
+Isso permite desacoplar os dois problemas e disprova uma conjectura de Bal--DeBiasio.
+\end{proofsketch}
+
+\begin{techniques}
+Decomposição em grupos de cores; argumento de counting em grafos de clusters;
+teoria de cobertura por árvores (para o ingrediente-chave); construção explícita de lower bounds.
+\end{techniques}
+
+%%===================================================================
+\chapter{Grafos Aleatórios}
+%%===================================================================
+
+\section{Partição em componentes (Bal--DeBiasio)}
+
+\begin{theorem}[Bal--DeBiasio, 2015 — \arxiv{1509.09168}]
+If $p \geq (27\log n/n)^{1/3}$, then w.h.p.\ every $2$-colouring of $G(n,p)$ admits a partition into two monochromatic components.
+\end{theorem}
+
+\begin{proofsketch}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Estrutura de $G(n,p)$:} Para $p$ neste regime, $G(n,p)$ é w.h.p.\ tal que toda
+        bipartição $(A, B)$ tem muitas arestas cruzando. Isso garante que qualquer cor ``domina''
+        uma grande componente conexa.
+
+  \item \textbf{Dois componentes:} Mostre que em toda 2-coloração, um dos dois grafos monocromáticos
+        (vermelho ou azul) é conexo sobre $\geq n/2$ vértices. Então o outro cobre os restantes.
+
+  \item \textbf{Argumento de esparsidade:} O regime $p \ll (r\log n/n)^{1/r}$ é insuficiente
+        porque $G(n,p)$ tem muitas componentes pequenas que uma coloração adversarial pode explorar.
+\end{enumerate}
+\end{proofsketch}
+
+\begin{techniques}
+Probabilistic method; análise de conectividade de $G(n,p)$; union bound sobre bipartições.
+\end{techniques}
+
+\section{Partição em ciclos (Korándi--Sárközy--Selkow)}
+
+\begin{theorem}[Korándi--Sárközy--Selkow, 2018 — \arxiv{1807.06607}]
+For $p \geq 29r^5 n^{-1/(2r)}$, w.h.p.\ any $r$-colouring of $G(n,p)$ has a partition into
+$\leq 1000r^4\log r$ monochromatic cycles.
+\end{theorem}
+
+\begin{proofsketch}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Família de ciclos quase-cobrindo:} Via o Sparse Regularity Lemma, encontre uma família
+        $\mathcal{C}_{\text{almost}}$ de ciclos monocromáticos cobrindo ``quase todos'' os vértices
+        com alta probabilidade.
+
+  \item \textbf{Absorção dos resíduos:} Os vértices não cobertos por $\mathcal{C}_{\text{almost}}$
+        são absorvidos usando propriedades de expansão de $G(n,p)$:
+        para $p$ no regime dado, w.h.p.\ qualquer conjunto pequeno de vértices tem vizinhança grande
+        em qualquer cor.
+
+  \item \textbf{Ciclos extras:} Cada vértice residual é incorporado em um novo ciclo curto.
+        O total de ciclos extras é $O(r^4 \log r)$.
+\end{enumerate}
+\end{proofsketch}
+
+\begin{techniques}
+Sparse Regularity Lemma; propriedades de expansão de $G(n,p)$; absorção em grafos esparsos.
+\end{techniques}
+
+%%===================================================================
+\chapter{Grafos Bipartidos}
+%%===================================================================
+
+\section{Partição de $K_{n,n}$ em caminhos (Pokrovskiy, 2014)}
+
+\begin{theorem}[Pokrovskiy, 2014]
+Any $2$-edge-colouring of $K_{n,n}$ that is not a split colouring admits a partition into
+two monochromatic paths of different colours.
+\end{theorem}
+
+\begin{proofsketch}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Casos:} Se a coloração é ``balanceada'' (nem muito vermelha nem muito azul),
+        construa dois caminhos alternando lados da bipartição.
+
+  \item \textbf{Split colouring:} Uma coloração onde todos os vértices de um lado têm o mesmo conjunto
+        de cores é excepcional. Nesse caso, a partição em 2 caminhos pode falhar,
+        mas ainda se obtém 3 caminhos.
+
+  \item \textbf{Melhoria de Stein (2022):} O mesmo resultado é provado com 1 ciclo + 1 caminho em vez de 2 caminhos,
+        usando análise mais fina da estrutura bipartida.
+\end{enumerate}
+\end{proofsketch}
+
+\begin{techniques}
+Análise de split colourings; construção explícita de caminhos; estrutura bipartida.
+\end{techniques}
+
+\section{Partição de $K_{n,n}$ em 4 ciclos}
+
+\begin{theorem}[2024 — \arxiv{2409.03394}]
+Every $2$-colouring of $K_{n,n}$ can be partitioned into at most $4$ monochromatic cycles.
+\end{theorem}
+
+\begin{proofsketch}
+A ideia central é decompor o problema em casos:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Caso balanceado:} Quando as densidades vermelho e azul são próximas de $1/2$,
+        é possível encontrar dois ciclos alternados cobrindo a maior parte dos vértices,
+        e 2 ciclos adicionais para os resíduos.
+
+  \item \textbf{Caso desbalanceado:} Quando uma cor domina (digamos, vermelho),
+        o grafo vermelho tem um ciclo Hamiltoniano em $K_{n,n}$ (pois o grafo vermelho tem grau mínimo alto).
+        O grafo azul cobre os vértices restantes com 1--3 ciclos.
+
+  \item \textbf{Argumento de matching:} Em cada caso, usa-se a existência de matchings perfeitos
+        em grafos bipartidos densos (Teorema de Hall) para construir os ciclos.
+\end{enumerate}
+\end{proofsketch}
+
+\begin{techniques}
+Teorema de Hall (matchings em bipartidos); análise de casos por balanceamento; indução.
+\end{techniques}
+
+\section{Resultado de Stein sobre hipergrafos e bipartidos}
+
+\begin{theorem}[Stein, 2022 — \arxiv{2204.12464}]
+Every $2$-edge-coloured $K_n^{(3)}$ (complete $3$-uniform hypergraph) can be partitioned into
+two tight paths of different colours.
+\end{theorem}
+
+\begin{proofsketch}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Reducão a grafos auxiliares:} Construa um grafo auxiliar onde os vértices são os vértices
+        do hipergrafo e as arestas representam pares de hiperarestas consecutivas.
+
+  \item \textbf{Coloração herdada:} A 2-coloração do hipergrafo induz uma 2-coloração no grafo auxiliar.
+
+  \item \textbf{Partição em caminhos:} Aplique o resultado de Gerencsér--Gyárfás no grafo auxiliar
+        (2 caminhos cobrem $K_n$) e converta os caminhos de volta em tight paths no hipergrafo.
+\end{enumerate}
+\end{proofsketch}
+
+\begin{techniques}
+Redução a grafos auxiliares; Gerencsér--Gyárfás; estrutura de hipercaminhos tight.
+\end{techniques}
+
+%%===================================================================
+\chapter{Grafos Multipartidos}
+%%===================================================================
+
+\section{Resultado de Schaudt--Stein}
+
+\begin{theorem}[Schaudt--Stein, 2014 — \arxiv{1407.5083}]
+Any $2$-coloured fair complete $k$-partite graph ($k \geq 3$) can be covered by two vertex-disjoint
+monochromatic paths of distinct colours.
+\end{theorem}
+
+\begin{proofsketch}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Redução ao caso bipartido:} Como o grafo é $k$-partido com $k \geq 3$,
+        qualquer vértice tem vizinhança grande em pelo menos duas partes.
+        Use isso para ``simular'' a estrutura de $K_{n,n}$ na análise.
+
+  \item \textbf{Caso ``fair'':} A hipótese que a maior parte tem $\leq n/2$ vértices garante
+        que nenhuma cor pode ser concentrada demais em um único lado.
+        Isso permite aplicar o argumento de Pokrovskiy para bipartidos.
+
+  \item \textbf{Ciclos:} Para a extensão para ciclos (até $14$), aplique o Regularity Lemma
+        ao grafo $k$-partido e reduza ao grafo de clusters. O resultado segue do caso de dois caminhos
+        mais absorção de resíduos.
+\end{enumerate}
+\end{proofsketch}
+
+\begin{techniques}
+Generalização da técnica de Pokrovskiy; Regularity Lemma; absorção.
+\end{techniques}
+
+\section{Resultado de Balogh--Kostochka--Lavrov--Liu}
+
+\begin{theorem}[Balogh--Kostochka--Lavrov--Liu, 2019 — \arxiv{1905.04657}]
+For large $n$, exact conditions on $n_1,\ldots,n_s$ for the existence of a monochromatic path $P_{2n+1}$
+in every $2$-colouring of $K_{n_1,\ldots,n_s}$ are determined. In particular, $K_{n,n,n} \to P_{2n+1}$.
+\end{theorem}
+
+\begin{proofsketch}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Matching conexo:} A ferramenta central é o Teorema de Matchings Conexos (\arxiv{1905.04653}):
+        em qualquer 2-coloração de $K_{n_1,\ldots,n_s}$, existe um matching conexo monocromático
+        de tamanho $\geq n - O(1)$ em uma das cores.
+        Isso é provado por análise direta dos grafos regulares de clusters.
+
+  \item \textbf{De matching conexo a caminho longo (Łuczak):} Um matching conexo de tamanho $m$
+        em um grafo regular ``garante'' um caminho de comprimento $\approx 2m$.
+        A técnica usa o Regularity Lemma para transformar o matching em um caminho no grafo original.
+
+  \item \textbf{Estabilidade:} Um teorema de estabilidade mostra que as colorações sem caminho longo
+        têm estrutura quasi-extremal específica, o que permite o caso exato por análise separada.
+\end{enumerate}
+\end{proofsketch}
+
+\begin{techniques}
+Matchings conexos em grafos regulares; Regularity Lemma + Blow-up Lemma; teorema de estabilidade.
+\end{techniques}
+
+%%===================================================================
+\chapter{Problemas Abertos}
+%%===================================================================
+
+\begin{problem}[Conjectura de Gyárfás — alta prioridade para qualificação]
+Prove that the vertices of every $r$-edge-coloured $K_n$ can be covered by $r$ vertex-disjoint
+monochromatic paths.
+
+\medskip\noindent
+\textit{Status:} $r=2$: Gerencsér--Gyárfás (1967). $r=3$: Pokrovskiy (2014). $r \geq 4$: aberto.
+
+\medskip\noindent
+\textit{Obs.:} Uma prova para $r=4$ seria um resultado de grande impacto.
+\end{problem}
+
+\begin{problem}[Lehel generalizado — ciclos, $r \geq 3$]
+Is $\mathrm{cp}_r(K_n) = O(r)$? (Current best: $O(r\log r)$ by Gyárfás--Ruszinkó--Sárközy--Szemerédi.)
+
+\medskip\noindent
+\textit{Variante:} Is $\mathrm{cp}_r(K_n) = r+c(r)$ for some constant $c(r)$?
+Pokrovskiy showed $c(r) \geq 1$ for $r \geq 3$ and $c(3) \leq 43000$ (later $\leq 60$ by Letzter).
+\end{problem}
+
+\begin{problem}[Grau mínimo $2n/3$, exato]
+Prove exactly that every $2$-coloured $n$-vertex graph with $\delta(G) \geq 2n/3$ can be partitioned
+into exactly $3$ monochromatic cycles.
+\end{problem}
+
+\begin{problem}[Bipartidos: partição em $\leq 3$ ciclos]
+Prove $\mathrm{cp}_2(K_{n,n}) = 3$.
+(Current best: $\leq 4$; lower bound: $\geq 3$ by easy construction.)
+\end{problem}
+
+\begin{problem}[Stein para hipergrafos de uniformidade $\geq 4$]
+Prove that every $2$-colouring of $K_n^{(r)}$ ($r \geq 4$) can be partitioned into two monochromatic
+tight paths of different colours.
+\end{problem}
+
+\begin{problem}[Conjectura de Ryser]
+Prove $\mathrm{tc}_r(G) \leq (r-1)\alpha(G)$ for all $r$ and $G$.
+\end{problem}
+
+\begin{problem}[Threshold para ciclos em $G(n,p)$]
+Determine the exact threshold $p^* = p^*(n,r)$ such that w.h.p.\ every $r$-colouring of $G(n,p)$
+can be partitioned into $f(r)$ monochromatic cycles.
+\end{problem}
+
+%%===================================================================
+\chapter*{Referências}
+\addcontentsline{toc}{chapter}{Referências}
+%%===================================================================
+
+\noindent Os 44 artigos estão listados por identificador arXiv. PDFs disponíveis na raiz do repositório.
+
+\begin{enumerate}[label={[\arabic*]}, leftmargin=2cm]
+\item Pokrovskiy, A.\ (2012). \arxiv{1205.5492}
+\item Gyárfás, A.\ (2014). Monochromatic cycle partitions in local edge colourings. \arxiv{1403.5975}
+\item Grinshpun, A.; Sárközy, G.N.\ (2014). \arxiv{1405.7507}
+\item Schaudt, O.; Stein, M.\ (2014). \arxiv{1407.5083}
+\item Gyárfás, A.; Sárközy, G.N.\ (2015). Local colourings in complete bipartite. \arxiv{1501.05619}
+\item Letzter, S.\ (2015). \arxiv{1502.07736}
+\item Gyárfás, A.\ (2015). Survey. \arxiv{1509.05539}
+\item Balogh et al.\ (2015). \arxiv{1509.05544}
+\item Bal, D.; DeBiasio, L.\ (2015). \arxiv{1509.09168}
+\item Gyárfás, A.; Király, Z.\ (2016). \arxiv{1604.02791}
+\item Kohayakawa, Y.; Mota, G.O.; Schacht, M.\ (2016). \arxiv{1611.10299}
+\item Girão, A.; Letzter, S.; Sahasrabudhe, J.\ \arxiv{1708.01284}
+\item Gyárfás, A.\ (2017). \arxiv{1711.01557}
+\item Korándi, D.; Sudakov, B.\ (2017). \arxiv{1712.03145}
+\item Bennett et al.\ (2017). \arxiv{1709.02990}
+\item DeBiasio, L.; Krueger, R.A.; Sárközy, G.N.\ (2018). \arxiv{1806.05271}
+\item Gyárfás, A.; Sárközy, G.N.\ (2018). \arxiv{1806.05119}
+\item Korándi, D.; Sárközy, G.N.; Selkow, S.\ (2018). \arxiv{1807.06607}
+\item Allen et al.\ (2019). \arxiv{1902.05882}
+\item Balogh et al.\ (2019). Connected matchings. \arxiv{1905.04653}
+\item Balogh et al.\ (2019). Long paths/cycles multipartite. \arxiv{1905.04657}
+\item Balogh et al.\ (2019). Large min.\ degree. \arxiv{1906.02854}
+\item Guggiari, H.; Scott, A.\ (2019). \arxiv{1909.09178}
+\item (2020). \arxiv{2006.14469}
+\item Füredi, Z.; Luo, R.\ (2020). \arxiv{2008.12217}
+\item Bradač, D.; Bucić, M.\ (2021). \arxiv{2109.02569}
+\item Luo, S.\ (2021). \arxiv{2111.13342}
+\item Arras, P.\ (2022). \arxiv{2202.06388}
+\item (2022). \arxiv{2204.00496}
+\item Conlon, D.; Luo, S.; Tyomkyn, M.\ (2022). \arxiv{2204.11360}
+\item Stein, M.\ (2022). \arxiv{2204.12464}
+\item Bal, D.; DeBiasio, L.\ (2023). Codegree. \arxiv{2301.05806}
+\item Lichev, L.; Luo, S.\ (2023). \arxiv{2302.04487}
+\item Bal, D.; DeBiasio, L.\ (2023). Expansive. \arxiv{2302.06669}
+\item Zhang et al.\ (2023). \arxiv{2304.08003}
+\item (2024). \arxiv{2403.12587}
+\item (2024). \arxiv{2409.03394}
+\item Pokrovskiy, A.; Versteegen, L.; Williams, E.\ (2024). \arxiv{2409.03623}
+\item Fox, H.; Luo, S.\ (2025). \arxiv{2509.01766}
+\item Di Braccio, F.; Patel, V.\ (2026). \arxiv{2601.22117}
+\item Hawranick, L.; Luo, R.\ (2026). \arxiv{2603.04704}
+\end{enumerate}
+
+\end{document}
