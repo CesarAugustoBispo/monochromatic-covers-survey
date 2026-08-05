@@ -11,6 +11,7 @@
 *.bcf
 *.run.xml
 
-# PDF files (large; regenerate with pdflatex)
-# Comment these lines if you want to version the compiled PDFs
-*.pdf
+# PDF files compilados (regeneráveis com pdflatex)
+survey_v1.pdf
+survey_v2.pdf
+lista_papers.pdf
